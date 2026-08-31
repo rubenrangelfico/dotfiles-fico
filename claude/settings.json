@@ -1,0 +1,107 @@
+{
+  "_setup_notes": [
+    "Replace all YOUR_* placeholders before use.",
+    "apiKeyHelper: path to the fico-api-key-helper script in your ~/.fico dir.",
+    "NODE_EXTRA_CA_CERTS / GH_TLS_CA_CERT_FILE: path to your Zscaler CA bundle (ask IT).",
+    "PATH (env): adjust for your OS; remove /opt/homebrew paths on Windows/Linux.",
+    "mcp-atlassian command: run 'which mcp-atlassian' after 'pip install mcp-atlassian'.",
+    "JIRA/CONFLUENCE tokens: generate at https://id.atlassian.com/manage-profile/security/api-tokens",
+    "Bitbucket token: generate at https://git-bitbucket.aws.fico.com > Profile > App Passwords.",
+    "additionalDirectories: expand YOUR_HOME to your actual home path (tilde not supported in JSON).",
+    "allowedTools pbcopy: macOS only — remove on Windows."
+  ],
+  "apiKeyHelper": "YOUR_HOME/.fico/fico-api-key-helper",
+  "env": {
+    "PATH": "YOUR_HOME/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "ANTHROPIC_BASE_URL": "https://llm.ai.fico.com",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "us.anthropic.claude-sonnet-5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "us.anthropic.claude-opus-4-8",
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "64000",
+    "MAX_THINKING_TOKENS": "1024",
+    "CLAUDE_CODE_API_KEY_HELPER_TTL_MS": "600000",
+    "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "NODE_EXTRA_CA_CERTS": "YOUR_HOME/.fico/ca-bundle-zscaler.pem",
+    "GH_TLS_CA_CERT_FILE": "YOUR_HOME/.fico/ca-bundle-zscaler.pem"
+  },
+  "permissions": {
+    "allow": [
+      "Edit(/.claude/skills/incident-manager/**)",
+      "mcp__playwright__browser_find",
+      "WebFetch(domain:confluence.atlassian.fico.com)",
+      "mcp__plugin_atlassian_atlassian__getConfluencePage",
+      "mcp__plugin_atlassian_atlassian__search",
+      "mcp__plugin_servicenow-mcp_servicenow-mcp-proxy__create_incident",
+      "mcp__snowflake__run_snowflake_query",
+      "mcp__plugin_atlassian_atlassian__getAccessibleAtlassianResources",
+      "mcp__plugin_atlassian_atlassian__searchConfluenceUsingCql",
+      "Edit(/.claude/skills/cab-review/**)",
+      "mcp__plugin_atlassian_atlassian__getJiraIssue",
+      "mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql",
+      "mcp__plugin_atlassian_atlassian__getTransitionsForJiraIssue",
+      "mcp__plugin_atlassian_atlassian__transitionJiraIssue",
+      "mcp__plugin_atlassian_atlassian__addCommentToJiraIssue",
+      "mcp__playwright__browser_network_requests",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_run_code_unsafe",
+      "mcp__playwright__browser_network_request",
+      "mcp__playwright__browser_navigate_back",
+      "mcp__plugin_servicenow-mcp_servicenow-mcp-proxy__get_attachment_metadata",
+      "mcp__playwright__browser_fill_form",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_handle_dialog",
+      "mcp__playwright__browser_press_key",
+      "mcp__plugin_teams-mcp_teams__reply_to_thread",
+      "mcp__servicenow__sn_list_incidents",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "WebFetch(domain:www.1password.dev)",
+      "mcp__plugin_office365-mcp_office365-mcp-proxy__list_mail_folder_messages",
+      "WebFetch(domain:fico.zoom.us)"
+    ],
+    "additionalDirectories": [
+      "YOUR_HOME/.claude/skills",
+      "YOUR_HOME/.claude/skills/incident-manager"
+    ]
+  },
+  "enabledPlugins": {
+    "servicenow-mcp@fico-se-tools": true,
+    "teams-mcp@fico-se-tools": true,
+    "office365-mcp@fico-se-tools": true,
+    "grafana-mcp@fico-se-tools": true,
+    "fico-investigator@fico-se-tools": true,
+    "argocd-skill@fico-se-tools": true,
+    "grafana-skill@fico-se-tools": true,
+    "superpowers@claude-plugins-official": true,
+    "atlassian@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "fico-se-tools": {
+      "source": {
+        "source": "git",
+        "url": "https://x-token-auth:YOUR_BITBUCKET_TOKEN@git-bitbucket.aws.fico.com:8443/scm/ftb/pse-ai-tools.git"
+      }
+    }
+  },
+  "fastMode": true,
+  "theme": "auto",
+  "mcpServers": {
+    "atlassian": {
+      "command": "YOUR_PYTHON_ENV/bin/mcp-atlassian",
+      "env": {
+        "JIRA_URL": "https://fico-prod.atlassian.net",
+        "JIRA_USERNAME": "YOUR_USERNAME@fico.com",
+        "JIRA_API_TOKEN": "YOUR_JIRA_API_TOKEN",
+        "CONFLUENCE_URL": "https://fico-prod.atlassian.net/wiki",
+        "CONFLUENCE_USERNAME": "YOUR_USERNAME@fico.com",
+        "CONFLUENCE_API_TOKEN": "YOUR_JIRA_API_TOKEN",
+        "SSL_CERT_FILE": "YOUR_HOME/.fico/ca-bundle-zscaler.pem",
+        "REQUESTS_CA_BUNDLE": "YOUR_HOME/.fico/ca-bundle-zscaler.pem"
+      }
+    }
+  },
+  "allowedTools": [
+    "Bash(pbcopy*)"
+  ]
+}

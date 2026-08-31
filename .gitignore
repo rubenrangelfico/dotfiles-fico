@@ -1,0 +1,30 @@
+# Token files — NEVER commit
+.teams_tokens.json
+*.tokens.json
+tokens.json
+
+# Logs
+*.log
+*.stdout.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+*.swp
+*.swo
+
+# Secrets
+*.pem
+*.key
+ca-bundle*.pem
