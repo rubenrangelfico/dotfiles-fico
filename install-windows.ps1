@@ -4,11 +4,13 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$FicoDir = Join-Path $env:USERPROFILE ".fico"
+$FicoDir    = Join-Path $env:USERPROFILE ".fico"
 $ScriptsDir = Join-Path $PSScriptRoot "fico-scripts"
-$TasksDir = Join-Path $PSScriptRoot "platform\windows\tasks"
-$ClaudeDir = Join-Path $PSScriptRoot "claude"
+$TasksDir   = Join-Path $PSScriptRoot "platform\windows\tasks"
+$StartupDir = Join-Path $PSScriptRoot "platform\windows\startup"
+$ClaudeDir  = Join-Path $PSScriptRoot "claude"
 $ClaudeDest = Join-Path $env:USERPROFILE ".claude"
+$WinStartup = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Startup"
 
 Write-Host "=== FICO AI Tooling - Windows Setup ===" -ForegroundColor Cyan
 Write-Host "FICO_DIR:     $FicoDir"
@@ -49,6 +51,11 @@ Write-Host ""
 Write-Host "Installing Python dependencies..."
 try {
     & $PythonPath -m pip install --quiet --upgrade requests websocket-client keyring win10toast 2>&1 | Out-Null
+} catch { }
+# Tray apps require these three extra packages
+Write-Host "  Installing tray dependencies (pystray, pillow, psutil)..."
+try {
+    & $PythonPath -m pip install --quiet --upgrade pystray pillow psutil 2>&1 | Out-Null
 } catch { }
 Write-Host "  Done."
 
@@ -94,7 +101,32 @@ foreach ($xmlFile in $TaskXmls) {
     }
 }
 
-# -- 7. Claude config -------------------------------------------------------
+# -- 7. Copy tray VBS launchers to Windows Startup folder ------------------
+Write-Host ""
+Write-Host "Installing tray auto-start launchers..."
+if (Test-Path $StartupDir) {
+    Get-ChildItem "$StartupDir\*.vbs" | ForEach-Object {
+        $dest = Join-Path $WinStartup $_.Name
+        Copy-Item $_.FullName $dest -Force
+        Write-Host "  [startup] $($_.Name) -> $WinStartup"
+    }
+} else {
+    Write-Host "  [skip] $StartupDir not found" -ForegroundColor Yellow
+}
+
+# -- 8. Always-visible tray icons (no overflow hiding) ---------------------
+Write-Host ""
+Write-Host "Configuring system tray to always show icons..."
+try {
+    $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"
+    Set-ItemProperty -Path $regPath -Name "EnableAutoTray" -Value 0 -Type DWord
+    Write-Host "  [registry] EnableAutoTray = 0 (icons always visible)"
+    Write-Host "  NOTE: Log off / log on once for this to take effect"
+} catch {
+    Write-Host "  [WARN] Could not set registry: $_" -ForegroundColor Yellow
+}
+
+# -- 9. Claude config -------------------------------------------------------
 Write-Host ""
 Write-Host "Claude config..."
 New-Item -ItemType Directory -Force -Path $ClaudeDest | Out-Null
@@ -121,6 +153,9 @@ Write-Host "     Set YOUR_TEAM_ID and YOUR_CHANNEL_ID at the top"
 Write-Host "  2. Populate $TokensFile with your msalRefreshToken"
 Write-Host "     (get it from Teams browser localStorage the first time)"
 Write-Host "  3. Run: python $FicoDir\refresh-tokens.py"
-Write-Host "  4. Verify tasks in Task Scheduler or run:"
+Write-Host "  4. Log off and back on — tray icons will start automatically"
+Write-Host "     Or launch now: pythonw $FicoDir\teams_tray.py"
+Write-Host "                    pythonw $FicoDir\mcp_tray.py"
+Write-Host "  5. Verify tasks in Task Scheduler or run:"
 $verifyCmd = "Get-ScheduledTask | Where-Object { `$_.TaskName -like 'fico-*' }"
 Write-Host "     $verifyCmd"
