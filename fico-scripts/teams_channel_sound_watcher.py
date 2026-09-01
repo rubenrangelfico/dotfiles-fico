@@ -16,7 +16,7 @@ CHANNEL_ID    = "YOUR_CHANNEL_ID"
 CHANNEL_LABEL = "General"
 # Sound path: Mac example below; Windows: use a .wav path or leave empty for default beep
 SOUND_MAC     = str(Path.home() / "Library" / "Sounds" / "ICQ.mp3")
-SOUND_WIN     = r"C:\Windows\Media\chimes.wav"  # built-in Windows sound; loud and clear
+SOUND_WIN     = r"C:\Windows\Media\chimes.wav"
 POLL_SECS     = 12
 PAGE_SIZE     = 15
 MSG_HOST      = "https://amer.ng.msg.teams.microsoft.com"
