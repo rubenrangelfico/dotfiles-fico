@@ -47,7 +47,7 @@ Get-ChildItem "$ScriptsDir\*.py" | ForEach-Object {
 # -- 4. Install pip dependencies --------------------------------------------
 Write-Host ""
 Write-Host "Installing Python dependencies..."
-& $PythonPath -m pip install --quiet --upgrade requests websocket-client keyring win10toast 2>$null
+$null = & $PythonPath -m pip install --quiet --upgrade requests websocket-client keyring win10toast 2>&1
 Write-Host "  Done."
 
 # -- 5. Bootstrap ~/.teams_tokens.json --------------------------------------
