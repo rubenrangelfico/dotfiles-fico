@@ -16,7 +16,7 @@ CHANNEL_ID    = "YOUR_CHANNEL_ID"
 CHANNEL_LABEL = "General"
 # Sound path: Mac example below; Windows: use a .wav path or leave empty for default beep
 SOUND_MAC     = str(Path.home() / "Library" / "Sounds" / "ICQ.mp3")
-SOUND_WIN     = ""  # e.g. r"C:\Windows\Media\chimes.wav" or "" for default beep
+SOUND_WIN     = r"C:\Windows\Media\chimes.wav"  # built-in Windows sound; loud and clear
 POLL_SECS     = 12
 PAGE_SIZE     = 15
 MSG_HOST      = "https://amer.ng.msg.teams.microsoft.com"
@@ -240,7 +240,7 @@ def maybe_check_sn_session():
         r = subprocess.run([sys.executable, str(SN_REFRESH_PY)],
                            capture_output=True, timeout=15)
         if r.returncode != 0:
-            log("SN health check FAILED — password may be stale")
+            log("SN health check FAILED — SSO session expired, open ServiceNow in browser to refresh")
     except Exception as e:
         log(f"SN health check error: {e}")
 
