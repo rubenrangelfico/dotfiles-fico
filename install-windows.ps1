@@ -126,4 +126,4 @@ Write-Host "     -> Set YOUR_TEAM_ID and YOUR_CHANNEL_ID"
 Write-Host "  2. Populate $TokensFile with your msalRefreshToken"
 Write-Host "     (get it from Teams browser localStorage the first time)"
 Write-Host "  3. Run: python $FicoDir\refresh-tokens.py"
-Write-Host "  4. Verify tasks: Get-ScheduledTask | Where-Object {`$_.TaskName -like 'fico-*'}"
+Write-Host '  4. Verify tasks: Get-ScheduledTask | Where-Object {$_.TaskName -like "fico-*"}'
