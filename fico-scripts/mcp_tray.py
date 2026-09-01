@@ -8,13 +8,15 @@ import psutil
 import pystray
 from PIL import Image, ImageDraw
 
-HOME        = Path.home()
-FICO_DIR    = HOME / ".fico"
-TOKENS_FILE = HOME / ".teams_tokens.json"
-TB_FILE     = HOME / ".token-broker" / "tokens.json"
-SN_CHECK_PY = FICO_DIR / "check-sn-health.py"
-REFRESH_PY  = FICO_DIR / "refresh-tokens.py"
-REFRESH_SN  = FICO_DIR / "refresh-sn-cookies.py"
+HOME             = Path.home()
+FICO_DIR         = HOME / ".fico"
+TOKENS_FILE      = HOME / ".teams_tokens.json"
+TB_FILE          = HOME / ".token-broker" / "tokens.json"
+SN_CHECK_PY      = FICO_DIR / "check-sn-health.py"
+REFRESH_PY       = FICO_DIR / "refresh-tokens.py"
+REFRESH_SN       = FICO_DIR / "refresh-sn-cookies.py"
+GRAFANA_TOKEN_FILE = HOME / ".grafana-mcp-proxy" / "token.json"
+GRAFANA_URL      = "https://grafana.YOUR_GRAFANA_DOMAIN"  # replace with your Grafana URL
 
 WARN_MIN   = 15   # warn when token expires in < 15 min
 POLL_SECS  = 30   # refresh every 30s
@@ -34,12 +36,17 @@ def _make_icon(color: str) -> Image.Image:
     return img
 
 def _make_multi_icon(states: list[str]) -> Image.Image:
-    """Quadrant icon: up to 4 colored dots showing individual MCP states."""
+    """3+2 dot icon showing individual MCP states (Teams, O365, SN, Zoom, Grafana)."""
     COLOR = {OK: "#2ecc40", WARN: "#ffdc00", ERROR: "#ff4136", UNKNOWN: "#aaaaaa"}
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    positions = [(2, 2, 30, 30), (34, 2, 62, 30), (2, 34, 30, 62), (34, 34, 62, 62)]
-    for i, state in enumerate(states[:4]):
+    # row 1 (3 dots): indices 0,1,2
+    # row 2 (2 dots, centered): indices 3,4
+    positions = [
+        (2, 2, 22, 22), (23, 2, 43, 22), (44, 2, 62, 22),
+        (13, 34, 33, 54), (32, 34, 52, 54),
+    ]
+    for i, state in enumerate(states[:5]):
         d.ellipse(positions[i], fill=COLOR.get(state, COLOR[UNKNOWN]))
     return img
 
@@ -138,12 +145,41 @@ def _check_zoom() -> tuple[str, str]:
         return ERROR, str(e)[:50]
 
 
+def _check_grafana() -> tuple[str, str]:
+    try:
+        # Prefer token-broker; fall back to local token file
+        ts_raw = None
+        try:
+            tb   = json.loads(TB_FILE.read_text())
+            data = tb.get("grafana-mcp", {}).get("data", {})
+            ts_raw = data.get("timestamp") if data else None
+        except Exception:
+            pass
+        if ts_raw is None and GRAFANA_TOKEN_FILE.exists():
+            local = json.loads(GRAFANA_TOKEN_FILE.read_text())
+            ts_raw = local.get("timestamp")
+        if ts_raw is None:
+            return ERROR, "no token"
+        ts = (datetime.fromtimestamp(int(ts_raw) / 1000, tz=timezone.utc)
+              if int(ts_raw) > 1e10
+              else datetime.fromtimestamp(int(ts_raw), tz=timezone.utc))
+        age_h = (datetime.now(timezone.utc) - ts).total_seconds() / 3600
+        if age_h > 24:
+            return ERROR, f"cookie {int(age_h)}h old — refresh needed"
+        if age_h > 8:
+            return WARN, f"cookie {int(age_h)}h old"
+        return OK, f"cookie {int(age_h)}h old"
+    except Exception as e:
+        return ERROR, str(e)[:50]
+
+
 def _check_all() -> dict[str, tuple[str, str]]:
     return {
         "Teams":        _check_teams(),
         "Office 365":   _check_office365(),
         "ServiceNow":   _check_servicenow(),
         "Zoom":         _check_zoom(),
+        "Grafana":      _check_grafana(),
     }
 
 # ── Auto-fix ─────────────────────────────────────────────────────────────────
@@ -181,9 +217,14 @@ def _fix_servicenow(icon, item):
     ).start()
 
 
+def _fix_grafana(icon, item):
+    subprocess.Popen(["start", GRAFANA_URL], shell=True)
+
+
 def _fix_all(icon, item):
     _fix_teams_o365(icon, item)
     _fix_servicenow(icon, item)
+    _fix_grafana(icon, item)
 
 # ── Icon & title selection ────────────────────────────────────────────────────
 
@@ -218,17 +259,21 @@ def _build_menu(statuses: dict, fixing: bool):
 
     # ── Fix actions (always visible, disabled while a fix is running) ──
     items.append(pystray.MenuItem(
-        "\U0001f504 Refreshing Teams / O365..." if fixing else "Refresh Teams / O365 tokens",
+        "🔄 Refreshing Teams / O365..." if fixing else "Refresh Teams / O365 tokens",
         _noop if fixing else _fix_teams_o365,
         enabled=not fixing,
     ))
     items.append(pystray.MenuItem(
-        "\U0001f504 Refreshing ServiceNow..." if fixing else "Refresh ServiceNow cookies",
+        "🔄 Refreshing ServiceNow..." if fixing else "Refresh ServiceNow cookies",
         _noop if fixing else _fix_servicenow,
         enabled=not fixing,
     ))
     items.append(pystray.MenuItem(
-        "\U0001f504 Fixing all..." if fixing else "Fix All",
+        "Open Grafana (refresh dmp_oauth_token cookie)",
+        _fix_grafana,
+    ))
+    items.append(pystray.MenuItem(
+        "🔄 Fixing all..." if fixing else "Fix All",
         _noop if fixing else _fix_all,
         enabled=not fixing,
     ))
