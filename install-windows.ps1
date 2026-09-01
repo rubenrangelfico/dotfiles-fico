@@ -86,7 +86,7 @@ foreach ($xmlFile in $TaskXmls) {
     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
 
     try {
-        $xml = Get-Content $srcPath -Raw -Encoding Unicode
+        $xml = Get-Content $srcPath -Raw -Encoding UTF8
         Register-ScheduledTask -TaskName $taskName -Xml $xml | Out-Null
         Write-Host "  [registered] $taskName"
     } catch {
