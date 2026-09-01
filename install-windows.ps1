@@ -16,8 +16,11 @@ Write-Host "Scripts from: $ScriptsDir"
 Write-Host ""
 
 # ── 1. Detect Python ──────────────────────────────────────────────────────
-$PythonPath = (Get-Command python -ErrorAction SilentlyContinue)?.Source `
-           ?? (Get-Command python3 -ErrorAction SilentlyContinue)?.Source
+$_py  = Get-Command python  -ErrorAction SilentlyContinue
+$_py3 = Get-Command python3 -ErrorAction SilentlyContinue
+if ($_py)       { $PythonPath = $_py.Source }
+elseif ($_py3)  { $PythonPath = $_py3.Source }
+else            { $PythonPath = $null }
 if (-not $PythonPath) {
     Write-Error "Python not found. Install from https://python.org or via winget: winget install Python.Python.3"
     exit 1
