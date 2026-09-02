@@ -3,24 +3,19 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.fico.teamswatcherbar</string>
+    <string>com.ruben.teamstokenrefresh</string>
     <key>ProgramArguments</key>
     <array>
         <string>PYTHON_PATH</string>
-        <string>FICO_DIR/teams_watcher_menubar.py</string>
+        <string>FICO_DIR/refresh-skype-token-bot.py</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
-    <key>KeepAlive</key>
-    <dict>
-        <key>SuccessfulExit</key>
-        <false/>
-    </dict>
+    <key>StartInterval</key>
+    <integer>2400</integer>
     <key>StandardOutPath</key>
-    <string>FICO_DIR/teams_watcher_menubar.log</string>
+    <string>FICO_DIR/teams_token_refresh.stdout.log</string>
     <key>StandardErrorPath</key>
-    <string>FICO_DIR/teams_watcher_menubar.log</string>
-    <key>ProcessType</key>
-    <string>Interactive</string>
+    <string>FICO_DIR/teams_token_refresh.stdout.log</string>
 </dict>
 </plist>

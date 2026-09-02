@@ -3,23 +3,24 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.fico.teamschannelsound</string>
+    <string>com.ruben.teamswatcherbar</string>
     <key>ProgramArguments</key>
     <array>
         <string>PYTHON_PATH</string>
-        <string>FICO_DIR/teams_channel_sound_watcher.py</string>
+        <string>FICO_DIR/teams_watcher_menubar.py</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
-    <true/>
-    <key>ThrottleInterval</key>
-    <integer>15</integer>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
     <key>StandardOutPath</key>
-    <string>FICO_DIR/teams_channel_watch.stdout.log</string>
+    <string>FICO_DIR/teams_watcher_menubar.log</string>
     <key>StandardErrorPath</key>
-    <string>FICO_DIR/teams_channel_watch.stdout.log</string>
+    <string>FICO_DIR/teams_watcher_menubar.log</string>
     <key>ProcessType</key>
-    <string>Background</string>
+    <string>Interactive</string>
 </dict>
 </plist>

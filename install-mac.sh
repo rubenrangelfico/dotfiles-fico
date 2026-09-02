@@ -78,10 +78,11 @@ for plist_src in "$PLISTS_DIR"/*.plist; do
   label=$(basename "$plist_src" .plist)
   dest="$LAUNCHAGENTS_DIR/$label.plist"
 
-  # Substitute PYTHON_PATH and FICO_DIR placeholders
+  # Substitute PYTHON_PATH, FICO_DIR, and HOME_DIR placeholders
   sed \
     -e "s|PYTHON_PATH|$PYTHON_PATH|g" \
     -e "s|FICO_DIR|$FICO_DIR|g" \
+    -e "s|HOME_DIR|$HOME|g" \
     "$plist_src" > "$dest"
 
   # Unload first (ignore errors if not loaded)
@@ -120,4 +121,4 @@ echo "     → Set YOUR_TEAM_ID and YOUR_CHANNEL_ID"
 echo "  2. Populate $TOKENS_FILE with your msalRefreshToken"
 echo "     (get it from Teams browser localStorage the first time)"
 echo "  3. Run: python3 $FICO_DIR/refresh-tokens.py"
-echo "  4. Check launchctl: launchctl list | grep com.fico"
+echo "  4. Check launchctl: launchctl list | grep com.ruben"

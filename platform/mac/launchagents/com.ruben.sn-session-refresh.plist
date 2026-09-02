@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.ruben.sn-session-refresh</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>PYTHON_PATH</string>
+        <string>FICO_DIR/refresh-sn-session.py</string>
+    </array>
+    <!-- Run every 4 hours -->
+    <key>StartInterval</key>
+    <integer>14400</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>FICO_DIR/refresh-sn-session.stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>FICO_DIR/refresh-sn-session.stdout.log</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>HOME_DIR</string>
+    </dict>
+    <key>KeepAlive</key>
+    <false/>
+</dict>
+</plist>
